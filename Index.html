@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Derecho Constitucional</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a3a6b;
+    --red: #c0272d;
+    --gold: #d4a843;
+    --light: #f5f3ee;
+    --white: #ffffff;
+    --gray: #8a8a8a;
+    --correct: #2d7a4f;
+    --wrong: #c0272d;
+    --correct-bg: #e8f5ee;
+    --wrong-bg: #fdecea;
+  }
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+font-family: ‘DM Sans’, sans-serif;
+background: var(–light);
+min-height: 100vh;
+color: #1a1a1a;
+}
+
+/* ── HEADER ── */
+header {
+background: var(–navy);
+padding: 24px 32px;
+display: flex;
+align-items: center;
+gap: 16px;
+position: relative;
+overflow: hidden;
+}
+header::after {
+content: ‘’;
+position: absolute;
+right: -60px; top: -60px;
+width: 220px; height: 220px;
+border-radius: 50%;
+background: rgba(192,39,45,0.15);
+}
+.logo-box {
+width: 48px; height: 48px;
+background: var(–red);
+border-radius: 8px;
+display: flex; align-items: center; justify-content: center;
+font-family: ‘Playfair Display’, serif;
+color: white; font-size: 22px; font-weight: 900;
+flex-shrink: 0;
+}
+header h1 {
+font-family: ‘Playfair Display’, serif;
+color: white;
+font-size: 20px;
+line-height: 1.2;
+}
+header p {
+color: rgba(255,255,255,0.6);
+font-size: 13px;
+margin-top: 2px;
+}
+
+/* ── MAIN ── */
+main {
+max-width: 720px;
+margin: 0 auto;
+padding: 32px 20px 60px;
+}
+
+/* ── PROGRESS ── */
+.progress-wrap {
+display: flex;
+align-items: center;
+gap: 12px;
+margin-bottom: 28px;
+}
+.progress-bar-bg {
+flex: 1;
+height: 6px;
+background: #ddd;
+border-radius: 99px;
+overflow: hidden;
+}
+.progress-bar-fill {
+height: 100%;
+background: linear-gradient(90deg, var(–navy), var(–red));
+border-radius: 99px;
+transition: width 0.4s ease;
+}
+.progress-label {
+font-size: 13px;
+color: var(–gray);
+white-space: nowrap;
+font-weight: 500;
+}
+
+/* ── CATEGORY BADGE ── */
+.category-badge {
+display: inline-block;
+padding: 4px 12px;
+border-radius: 99px;
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+margin-bottom: 14px;
+}
+.cat-estado { background: #e8eef8; color: var(–navy); }
+.cat-poderes { background: #fdf0e8; color: #a0420a; }
+.cat-admin { background: #edf7f1; color: #2d7a4f; }
+
+/* ── QUESTION CARD ── */
+.question-card {
+background: white;
+border-radius: 16px;
+padding: 32px;
+box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+animation: slideIn 0.35s ease;
+}
+@keyframes slideIn {
+from { opacity: 0; transform: translateY(16px); }
+to   { opacity: 1; transform: translateY(0); }
+}
+
+.q-number {
+font-size: 12px;
+color: var(–gray);
+font-weight: 600;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+margin-bottom: 10px;
+}
+.q-text {
+font-family: ‘Playfair Display’, serif;
+font-size: 20px;
+line-height: 1.45;
+color: #111;
+margin-bottom: 28px;
+}
+
+/* ── OPTIONS ── */
+.options {
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+.option-btn {
+display: flex;
+align-items: center;
+gap: 14px;
+padding: 14px 18px;
+border: 2px solid #e5e5e5;
+border-radius: 10px;
+background: white;
+cursor: pointer;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 15px;
+color: #222;
+text-align: left;
+transition: all 0.2s;
+position: relative;
+overflow: hidden;
+}
+.option-btn:hover:not(:disabled) {
+border-color: var(–navy);
+background: #f0f4fb;
+transform: translateX(4px);
+}
+.option-letter {
+width: 30px; height: 30px;
+border-radius: 50%;
+background: #f0f0f0;
+display: flex; align-items: center; justify-content: center;
+font-weight: 700;
+font-size: 13px;
+flex-shrink: 0;
+transition: all 0.2s;
+}
+.option-btn.correct {
+border-color: var(–correct);
+background: var(–correct-bg);
+}
+.option-btn.correct .option-letter {
+background: var(–correct);
+color: white;
+}
+.option-btn.wrong {
+border-color: var(–wrong);
+background: var(–wrong-bg);
+}
+.option-btn.wrong .option-letter {
+background: var(–wrong);
+color: white;
+}
+.option-btn:disabled { cursor: default; }
+
+/* ── FEEDBACK ── */
+.feedback {
+margin-top: 20px;
+padding: 14px 18px;
+border-radius: 10px;
+font-size: 14px;
+line-height: 1.5;
+display: none;
+animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.feedback.show { display: block; }
+.feedback.correct-fb {
+background: var(–correct-bg);
+border-left: 4px solid var(–correct);
+color: #1a5c36;
+}
+.feedback.wrong-fb {
+background: var(–wrong-bg);
+border-left: 4px solid var(–wrong);
+color: #8b1a1a;
+}
+.feedback strong { display: block; margin-bottom: 4px; font-size: 15px; }
+
+/* ── NEXT BUTTON ── */
+.next-btn {
+margin-top: 24px;
+width: 100%;
+padding: 15px;
+background: var(–navy);
+color: white;
+border: none;
+border-radius: 10px;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 15px;
+font-weight: 600;
+cursor: pointer;
+display: none;
+transition: background 0.2s, transform 0.1s;
+}
+.next-btn:hover { background: #142d54; transform: translateY(-1px); }
+.next-btn.show { display: block; }
+
+/* ── SCORE CARD ── */
+.score-card {
+background: white;
+border-radius: 16px;
+padding: 48px 32px;
+box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+text-align: center;
+display: none;
+animation: slideIn 0.4s ease;
+}
+.score-card.show { display: block; }
+.score-emoji { font-size: 64px; margin-bottom: 12px; }
+.score-title {
+font-family: ‘Playfair Display’, serif;
+font-size: 28px;
+color: var(–navy);
+margin-bottom: 8px;
+}
+.score-sub {
+color: var(–gray);
+font-size: 15px;
+margin-bottom: 32px;
+}
+.score-number {
+font-family: ‘Playfair Display’, serif;
+font-size: 72px;
+font-weight: 900;
+color: var(–navy);
+line-height: 1;
+}
+.score-denom {
+font-size: 24px;
+color: var(–gray);
+font-weight: 300;
+}
+.score-bar-wrap {
+margin: 28px 0;
+height: 12px;
+background: #eee;
+border-radius: 99px;
+overflow: hidden;
+}
+.score-bar-fill {
+height: 100%;
+border-radius: 99px;
+transition: width 1s ease;
+}
+.breakdown {
+display: flex;
+justify-content: center;
+gap: 24px;
+margin: 24px 0;
+flex-wrap: wrap;
+}
+.breakdown-item {
+text-align: center;
+padding: 14px 20px;
+border-radius: 10px;
+min-width: 100px;
+}
+.breakdown-item .bd-num {
+font-family: ‘Playfair Display’, serif;
+font-size: 28px;
+font-weight: 700;
+}
+.breakdown-item .bd-label {
+font-size: 12px;
+margin-top: 2px;
+font-weight: 500;
+}
+.bd-estado { background: #e8eef8; }
+.bd-estado .bd-num { color: var(–navy); }
+.bd-estado .bd-label { color: var(–navy); }
+.bd-poderes { background: #fdf0e8; }
+.bd-poderes .bd-num { color: #a0420a; }
+.bd-poderes .bd-label { color: #a0420a; }
+.bd-admin { background: #edf7f1; }
+.bd-admin .bd-num { color: #2d7a4f; }
+.bd-admin .bd-label { color: #2d7a4f; }
+.restart-btn {
+margin-top: 20px;
+padding: 15px 40px;
+background: var(–navy);
+color: white;
+border: none;
+border-radius: 10px;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 15px;
+font-weight: 600;
+cursor: pointer;
+transition: background 0.2s;
+}
+.restart-btn:hover { background: #142d54; }
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="logo-box">U</div>
+  <div>
+    <h1>Quiz — Derecho Constitucional</h1>
+    <p>UNIROMANA · Universidad de La Romana</p>
+  </div>
+</header>
+
+<main>
+  <div class="progress-wrap">
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <span class="progress-label" id="progressLabel">1 / 15</span>
+  </div>
+
+  <div id="quizArea">
+    <div class="question-card" id="questionCard">
+      <div class="category-badge" id="catBadge"></div>
+      <div class="q-number" id="qNumber"></div>
+      <div class="q-text" id="qText"></div>
+      <div class="options" id="optionsContainer"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Siguiente pregunta →</button>
+    </div>
+  </div>
+
+  <div class="score-card" id="scoreCard">
+    <div class="score-emoji" id="scoreEmoji"></div>
+    <div class="score-title" id="scoreTitle"></div>
+    <div class="score-sub" id="scoreSub"></div>
+    <div class="score-number" id="scoreNum"><span id="scoreCorrect">0</span><span class="score-denom"> / 15</span></div>
+    <div class="score-bar-wrap">
+      <div class="score-bar-fill" id="scoreBarFill"></div>
+    </div>
+    <div class="breakdown">
+      <div class="breakdown-item bd-estado">
+        <div class="bd-num" id="bdEstado">0/5</div>
+        <div class="bd-label">Estado Dominicano</div>
+      </div>
+      <div class="breakdown-item bd-poderes">
+        <div class="bd-num" id="bdPoderes">0/5</div>
+        <div class="bd-label">Separación de Poderes</div>
+      </div>
+      <div class="breakdown-item bd-admin">
+        <div class="bd-num" id="bdAdmin">0/5</div>
+        <div class="bd-label">Administración Pública</div>
+      </div>
+    </div>
+    <button class="restart-btn" onclick="restart()">Intentar de nuevo</button>
+  </div>
+</main>
+
+<script>
+const questions = [
+  // ── ESTADO DOMINICANO (5) ──
+  {
+    cat: "estado",
+    catLabel: "El Estado Dominicano",
+    catClass: "cat-estado",
+    text: "¿Cuál de los siguientes artículos de la Constitución Dominicana define al Estado como social, democrático y de Derecho?",
+    options: ["Artículo 1", "Artículo 4", "Artículo 7", "Artículo 38"],
+    correct: 2,
+    explanation: "El artículo 7 establece que 'La República Dominicana es un Estado Social y Democrático de Derecho', lo que implica que el Estado debe garantizar los derechos fundamentales y actuar dentro del marco de la ley."
+  },
+  {
+    cat: "estado",
+    catLabel: "El Estado Dominicano",
+    catClass: "cat-estado",
+    text: "¿Cuáles son los elementos constitutivos del Estado dominicano según la teoría clásica del Derecho?",
+    options: [
+      "Gobierno, leyes y ejército",
+      "Territorio, población y poder político soberano",
+      "Constitución, Congreso y Poder Ejecutivo",
+      "Nación, idioma y religión oficial"
+    ],
+    correct: 1,
+    explanation: "Los tres elementos clásicos del Estado son: territorio (espacio geográfico sobre el que ejerce soberanía), población (conjunto de personas que lo habitan) y poder político soberano (capacidad de mando sobre ese territorio y esa población)."
+  },
+  {
+    cat: "estado",
+    catLabel: "El Estado Dominicano",
+    catClass: "cat-estado",
+    text: "La Constitución dominicana fue promulgada en 2010 y reformada más recientemente mediante:",
+    options: ["La Ley núm. 41-08", "La Ley núm. 137-11", "La Ley núm. 61-24", "La Ley núm. 200-04"],
+    correct: 2,
+    explanation: "La reforma constitucional más reciente se realizó en octubre de 2024 a través de la Ley núm. 61-24, que introdujo modificaciones en materia electoral y de organización institucional del Estado."
+  },
+  {
+    cat: "estado",
+    catLabel: "El Estado Dominicano",
+    catClass: "cat-estado",
+    text: "¿Qué principio establece que ninguna ley ni acto público puede contradecir la Constitución?",
+    options: [
+      "Principio de legalidad",
+      "Principio de supremacía constitucional",
+      "Principio de separación de poderes",
+      "Principio de proporcionalidad"
+    ],
+    correct: 1,
+    explanation: "El principio de supremacía constitucional, consagrado en el artículo 6 de la Constitución, establece que la Constitución es la norma de mayor jerarquía y que todas las demás normas deben ser conformes con ella."
+  },
+  {
+    cat: "estado",
+    catLabel: "El Estado Dominicano",
+    catClass: "cat-estado",
+    text: "El bloque de constitucionalidad en República Dominicana incluye, además de la Constitución:",
+    options: [
+      "Solo las leyes orgánicas aprobadas por el Congreso",
+      "Los decretos del Poder Ejecutivo",
+      "Los tratados internacionales de derechos humanos ratificados por el Estado",
+      "Las sentencias de la Suprema Corte de Justicia"
+    ],
+    correct: 2,
+    explanation: "Según el artículo 74.3 de la Constitución, los tratados internacionales de derechos humanos ratificados por el Estado dominicano tienen jerarquía constitucional y forman parte del bloque de constitucionalidad."
+  },
+
+  // ── SEPARACIÓN DE PODERES (5) ──
+  {
+    cat: "poderes",
+    catLabel: "Separación de Poderes",
+    catClass: "cat-poderes",
+    text: "¿Qué filósofo formuló el principio de separación de poderes en su obra 'Del Espíritu de las Leyes'?",
+    options: ["John Locke", "Jean-Jacques Rousseau", "Montesquieu", "Immanuel Kant"],
+    correct: 2,
+    explanation: "El barón de Montesquieu formuló el principio de separación de poderes en 1748 en 'Del Espíritu de las Leyes', planteando la necesidad de distribuir el poder entre legislativo, ejecutivo y judicial para evitar la tiranía."
+  },
+  {
+    cat: "poderes",
+    catLabel: "Separación de Poderes",
+    catClass: "cat-poderes",
+    text: "El Congreso Nacional de la República Dominicana está integrado por:",
+    options: [
+      "Solo el Senado con 32 miembros",
+      "El Senado y la Cámara de Diputados",
+      "La Cámara de Diputados y el Tribunal Constitucional",
+      "El Senado, la Cámara de Diputados y el Consejo de Estado"
+    ],
+    correct: 1,
+    explanation: "El Congreso Nacional es bicameral: está compuesto por el Senado (32 senadores, uno por cada provincia y el Distrito Nacional) y la Cámara de Diputados (mínimo 190 diputados). Ambas cámaras deben aprobar las leyes."
+  },
+  {
+    cat: "poderes",
+    catLabel: "Separación de Poderes",
+    catClass: "cat-poderes",
+    text: "¿Cuál es la función principal del Poder Judicial en el sistema de separación de poderes?",
+    options: [
+      "Crear las leyes y aprobar el presupuesto",
+      "Dirigir la política exterior e interior del Estado",
+      "Impartir justicia aplicando la Constitución y las leyes",
+      "Designar los jueces del Tribunal Constitucional"
+    ],
+    correct: 2,
+    explanation: "El Poder Judicial tiene como función esencial impartir justicia en nombre de la República y de conformidad con la Constitución y las leyes. No crea leyes ni gobierna; interpreta y aplica el ordenamiento jurídico en casos concretos."
+  },
+  {
+    cat: "poderes",
+    catLabel: "Separación de Poderes",
+    catClass: "cat-poderes",
+    text: "¿Qué órgano designa a los jueces de la Suprema Corte de Justicia y del Tribunal Constitucional en RD?",
+    options: [
+      "El Presidente de la República",
+      "El Senado de la República",
+      "El Consejo Nacional de la Magistratura",
+      "La Cámara de Diputados"
+    ],
+    correct: 2,
+    explanation: "El Consejo Nacional de la Magistratura (CNM) es el órgano constitucional encargado de designar a los jueces de la Suprema Corte de Justicia, el Tribunal Constitucional y el Tribunal Superior Electoral. Está presidido por el Presidente de la República."
+  },
+  {
+    cat: "poderes",
+    catLabel: "Separación de Poderes",
+    catClass: "cat-poderes",
+    text: "El gobierno local en RD se ejerce a través de:",
+    options: [
+      "Los gobernadores provinciales designados por el Ejecutivo",
+      "Los ayuntamientos y el Distrito Nacional, elegidos por voto popular",
+      "Las juntas de vecinos reconocidas por el Ministerio del Interior",
+      "Los delegados regionales del gobierno central"
+    ],
+    correct: 1,
+    explanation: "Según la Ley 176-07 y la Constitución, el gobierno local se ejerce a través de los ayuntamientos municipales y el Distrito Nacional. Sus autoridades (alcaldes y concejales) son elegidas por sufragio universal directo cada cuatro años."
+  },
+
+  // ── ADMINISTRACIÓN PÚBLICA (5) ──
+  {
+    cat: "admin",
+    catLabel: "Administración Pública",
+    catClass: "cat-admin",
+    text: "¿Cuál es el principio que establece que la Administración solo puede hacer lo que la ley expresamente le autoriza?",
+    options: [
+      "Principio de proporcionalidad",
+      "Principio de legalidad administrativa",
+      "Principio de eficiencia",
+      "Principio de subsidiariedad"
+    ],
+    correct: 1,
+    explanation: "El principio de legalidad administrativa, consagrado en el artículo 138 de la Constitución, establece que la Administración solo puede actuar dentro de lo que la ley le permite, a diferencia de los particulares que pueden hacer todo lo que la ley no prohíbe."
+  },
+  {
+    cat: "admin",
+    catLabel: "Administración Pública",
+    catClass: "cat-admin",
+    text: "¿Qué ley regula la función pública y la carrera administrativa en la República Dominicana?",
+    options: ["Ley núm. 120-01", "Ley núm. 41-08", "Ley núm. 200-04", "Ley núm. 107-13"],
+    correct: 1,
+    explanation: "La Ley núm. 41-08 de Función Pública, promulgada en enero de 2008, es la norma fundamental que regula el empleo público, la carrera administrativa y los derechos y deberes de los servidores del Estado dominicano."
+  },
+  {
+    cat: "admin",
+    catLabel: "Administración Pública",
+    catClass: "cat-admin",
+    text: "El órgano rector del empleo público y de la carrera administrativa en RD es:",
+    options: [
+      "La Contraloría General de la República",
+      "La Cámara de Cuentas",
+      "El Ministerio de Administración Pública (MAP)",
+      "El Ministerio de Hacienda"
+    ],
+    correct: 2,
+    explanation: "El Ministerio de Administración Pública (MAP), creado en 2008, es el órgano rector del empleo público. Le corresponde diseñar políticas de gestión de recursos humanos, supervisar la carrera administrativa y garantizar la profesionalización de los servidores del Estado."
+  },
+  {
+    cat: "admin",
+    catLabel: "Administración Pública",
+    catClass: "cat-admin",
+    text: "¿Cuál de los siguientes es un mecanismo de control EXTERNO de la Administración Pública dominicana?",
+    options: [
+      "Las Unidades de Auditoría Interna (UAI)",
+      "La Contraloría General de la República",
+      "La Cámara de Cuentas",
+      "El Ministerio de Administración Pública"
+    ],
+    correct: 2,
+    explanation: "La Cámara de Cuentas es el órgano de control externo: audita las cuentas del Estado después de que se ejecuta el gasto y presenta sus informes al Congreso. La Contraloría ejerce control interno previo, y las UAI son mecanismos de control interno dentro de cada institución."
+  },
+  {
+    cat: "admin",
+    catLabel: "Administración Pública",
+    catClass: "cat-admin",
+    text: "La proscripción constitucional de la corrupción en RD está consagrada en:",
+    options: ["Artículo 38", "Artículo 74", "Artículo 146", "Artículo 262"],
+    correct: 2,
+    explanation: "El artículo 146 de la Constitución establece la obligación del Estado de combatir la corrupción, incluyendo el deber de declaración jurada de bienes de los funcionarios. La PEPCA es el órgano del Ministerio Público especializado en perseguir estos delitos."
+  }
+];
+
+// ── STATE ──
+let current = 0;
+let score = 0;
+let answered = false;
+let catScores = { estado: 0, poderes: 0, admin: 0 };
+let catTotals = { estado: 0, poderes: 0, admin: 0 };
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Shuffle questions on load
+const shuffled = shuffle(questions);
+
+function loadQuestion() {
+  answered = false;
+  const q = shuffled[current];
+  const total = shuffled.length;
+
+  // Progress
+  document.getElementById('progressFill').style.width = (current / total * 100) + '%';
+  document.getElementById('progressLabel').textContent = `${current + 1} / ${total}`;
+
+  // Badge & number
+  const badge = document.getElementById('catBadge');
+  badge.textContent = q.catLabel;
+  badge.className = 'category-badge ' + q.catClass;
+  document.getElementById('qNumber').textContent = `Pregunta ${current + 1}`;
+  document.getElementById('qText').textContent = q.text;
+
+  // Options
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i, q.correct, q.explanation, q.cat);
+    container.appendChild(btn);
+  });
+
+  // Reset feedback & next
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.innerHTML = '';
+  document.getElementById('nextBtn').className = 'next-btn';
+
+  // Animate card
+  const card = document.getElementById('questionCard');
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = 'slideIn 0.35s ease';
+}
+
+function selectAnswer(selected, correct, explanation, cat) {
+  if (answered) return;
+  answered = true;
+  catTotals[cat]++;
+
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const fb = document.getElementById('feedback');
+
+  if (selected === correct) {
+    btns[selected].classList.add('correct');
+    score++;
+    catScores[cat]++;
+    fb.className = 'feedback correct-fb show';
+    fb.innerHTML = `<strong>✓ ¡Correcto!</strong>${explanation}`;
+  } else {
+    btns[selected].classList.add('wrong');
+    btns[correct].classList.add('correct');
+    fb.className = 'feedback wrong-fb show';
+    fb.innerHTML = `<strong>✗ Incorrecto.</strong>${explanation}`;
+  }
+
+  document.getElementById('nextBtn').className = 'next-btn show';
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= shuffled.length) {
+    showScore();
+  } else {
+    loadQuestion();
+  }
+}
+
+function showScore() {
+  document.getElementById('quizArea').style.display = 'none';
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressLabel').textContent = `${shuffled.length} / ${shuffled.length}`;
+
+  const sc = document.getElementById('scoreCard');
+  sc.className = 'score-card show';
+
+  const pct = score / shuffled.length;
+  document.getElementById('scoreCorrect').textContent = score;
+
+  // Color bar
+  const bar = document.getElementById('scoreBarFill');
+  bar.style.background = pct >= 0.8
+    ? 'linear-gradient(90deg, #2d7a4f, #4caf50)'
+    : pct >= 0.6
+    ? 'linear-gradient(90deg, #d4a843, #f0c040)'
+    : 'linear-gradient(90deg, #c0272d, #e05555)';
+  setTimeout(() => { bar.style.width = (pct * 100) + '%'; }, 100);
+
+  // Emoji & message
+  let emoji, title, sub;
+  if (pct >= 0.93) {
+    emoji = '🏆'; title = '¡Excelente dominio!';
+    sub = 'Conoces muy bien estos temas. ¡Listo para el examen!';
+  } else if (pct >= 0.8) {
+    emoji = '🎯'; title = '¡Muy bien!';
+    sub = 'Tienes sólidos conocimientos. Repasa los temas donde fallaste.';
+  } else if (pct >= 0.6) {
+    emoji = '📚'; title = 'Bien, pero puedes mejorar';
+    sub = 'Tienes la base. Refuerza los conceptos donde tuviste dificultades.';
+  } else {
+    emoji = '💪'; title = 'Hay que repasar más';
+    sub = 'Vuelve a revisar el material de las unidades y vuelve a intentarlo.';
+  }
+
+  document.getElementById('scoreEmoji').textContent = emoji;
+  document.getElementById('scoreTitle').textContent = title;
+  document.getElementById('scoreSub').textContent = sub;
+
+  // Breakdown
+  document.getElementById('bdEstado').textContent = `${catScores.estado}/${catTotals.estado}`;
+  document.getElementById('bdPoderes').textContent = `${catScores.poderes}/${catTotals.poderes}`;
+  document.getElementById('bdAdmin').textContent = `${catScores.admin}/${catTotals.admin}`;
+}
+
+function restart() {
+  current = 0;
+  score = 0;
+  answered = false;
+  catScores = { estado: 0, poderes: 0, admin: 0 };
+  catTotals = { estado: 0, poderes: 0, admin: 0 };
+  shuffled.sort(() => Math.random() - 0.5);
+
+  document.getElementById('scoreCard').className = 'score-card';
+  document.getElementById('quizArea').style.display = 'block';
+  loadQuestion();
+}
+
+// Init
+loadQuestion();
+</script>
+
+</body>
+</html>
